@@ -1,0 +1,10 @@
+1. Got the word count of all the events and dropped outliers: if it had over 20 words in the event, there's not much I can sensibly add.
+
+2. There were a large percentage of single word events:
+	A. Created a stopword list by removing meaningless events: for example: ["this", "there", "was"]
+	B. For the remaining single word events:
+	-If it was plural, I added "There were" in front
+	-If it was singular and started with a consonant, I added "There was a" in front
+	-If it was singular and started with a vowel, I added "There was an" in front
+
+3. For events that started with a year, I added "In the year" in front
