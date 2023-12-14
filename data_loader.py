@@ -1,4 +1,5 @@
 from transformers import AutoTokenizer
+import torch
 
 
 class EventSentenceLoader:
@@ -11,7 +12,9 @@ class EventSentenceLoader:
         with open(self.filepath, "r", encoding="utf-8") as file:
             for line in file:
                 sentence, event = line.strip().split(" /// ")
+
                 tokenized_sentence = self.tokenizer.tokenize(sentence)
+                encoding = self.tokenizer(event, padding='max_length', max_length=256)
                 event_tokens = set(self.tokenizer.tokenize(event))
 
                 # Label the sentence tokens
@@ -19,12 +22,15 @@ class EventSentenceLoader:
                     1 if token in event_tokens else 0 for token in tokenized_sentence
                 ]
 
+                labels += [0] * (256 - len(labels))
+
                 # Append the tokenized sentence and labels to the data list
                 data.append(
                     {
                         "sentence": sentence,
-                        "tokens": tokenized_sentence,
-                        "labels": labels,
+                        "tokens": torch.tensor(encoding['input_ids']),
+                        "attention": torch.tensor(encoding['attention_mask']),
+                        "labels": torch.tensor(labels),
                     }
                 )
         return data
